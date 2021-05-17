@@ -16,8 +16,8 @@ spectrum.damping=damping ;
 spectrum.time=time;
 spectrum.signal=signal;
 
-spectrumSpa=target.spectrum;
-spectrumPeriod=target.period; 
+spectrumSpa=spectrum.spectrum;
+spectrumPeriod=spectrum.period; 
 
 
 %%% look for the wanted pseudo acceleartion for your calculation
@@ -28,8 +28,11 @@ disp(['Spa at ' num2str(period) 's is ' num2str(Spa/g) 'g'])
 
 
 %%% plot
-plot(spectrumPeriod,spectrumSpa/g*,'r--')
-plot(period,Spa/g*,'.')
+figure(1); hold on
+plot(spectrumPeriod,spectrumSpa/g,'r','LineWidth',1)
+plot(period,Spa/g,'.k','MarkerSize',10)
+plot([0 period],[Spa/g Spa/g],'--k')
+plot([period period],[0 Spa/g],'--k')
 
 axis([0 4 0 inf])
 legend({'elastic spectrum','selected period'})
