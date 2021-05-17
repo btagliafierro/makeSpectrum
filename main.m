@@ -24,7 +24,7 @@ spectrumPeriod=target.period;
   
 index=find(spectrumPeriod>=period,1);
 Spa=spectrumSpa(index);
-disp([Spa at ' num2str(period) 's is ' num2str(Spa/g) 'g'])
+disp(['Spa at ' num2str(period) 's is ' num2str(Spa/g) 'g'])
 
 
 %%% plot
