@@ -1,14 +1,14 @@
 clear;close all; clc
 
   
-  g=9.81;
-  damping=0.05;
-  period=0.85;
+g=9.81;
+damping=0.05;
+period=0.85;
   
-  %%%% load ground motion - here an old one from a .dat
-  temp = load('Kobe95.dat');
-  time=temp(:,1);
-  signal=temp(:,2);
+%%%% load ground motion - here an old one from a .dat
+temp = load('Kobe95.dat');
+time=temp(:,1);
+signal=temp(:,2);
 
   
 spectrum=makeSpectrum();
