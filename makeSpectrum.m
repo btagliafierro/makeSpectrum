@@ -1,6 +1,6 @@
 classdef makeSpectrum
-    % This class allows to directly evaluate the spectrum
-    % I didn't go through a single call to an SDOF solver to make it faster. The constants are evaluated once and for all.
+    %UNTITLED Summary of this class goes here
+    %   Detailed explanation goes here
     properties
         signal
         time 
@@ -9,12 +9,13 @@ classdef makeSpectrum
         ariasFunction
         PGA
         envelopeShape
-        damping=0.05;
+        
     end
-    
+    properties(SetAccess = public) 
+        damping;
+    end
     properties(Constant)
         dtSpectrum=0.02;
-        
     end
     properties(Dependent)
         period    
@@ -24,24 +25,21 @@ classdef makeSpectrum
     
     methods
         function obj = makeSpectrum()
-            %UNTITLED Construct an instance of this class
             %   Detailed explanation goes here
                 
         end
         function obj=set.time(obj, vecIn)
             obj.time=vecIn;
         end
+
+        function obj=set.damping(obj, vecIn)
+            obj.damping=vecIn;
+            % disp('Default damping has been changed')
+        end
         
-%         function obj=get.spectrum(obj)
-%             obj.spectrum;
-%         end
         
         function obj=set.signal(obj, vecIn)
             obj.signal=vecIn;
-        end
-        
-        function obj=set.damping(obj, temp)
-            obj.damping=temp;
         end
         
         function obj=get.dtSignal(obj)
@@ -57,9 +55,10 @@ classdef makeSpectrum
         end
         
         function obj=get.period(obj)
-            Tb=0.05; Tc=0.25; Td=1.2;
+            Tb=0.05; Tc=0.25; Td=1.2; Timportant=4; Tend=6;
             n1=10;n=1;
-            obj=[ (obj.dtSpectrum/n1:obj.dtSpectrum/n1:Tb) (Tb+obj.dtSpectrum/n1:obj.dtSpectrum/n1:Tc) (Tc+obj.dtSpectrum*n/2:obj.dtSpectrum*n/2:Td) (Td+obj.dtSpectrum*n:obj.dtSpectrum*n:10)]';
+            obj=[ (obj.dtSpectrum/n1:obj.dtSpectrum/n1:Tb) (Tb+obj.dtSpectrum/n1:obj.dtSpectrum/n1:Tc) (Tc+obj.dtSpectrum*n/2:obj.dtSpectrum*n/2:Td) (Td+obj.dtSpectrum*n:obj.dtSpectrum*n:Timportant)...
+                (Timportant+0.2:0.2:Tend)]';
         end       
         
         function obj=get.envelopeShape(obj)
@@ -97,7 +96,7 @@ classdef makeSpectrum
                 -O.*(Q.*(C-obj.damping./P.*S)-R.*(omgd.*S+obj.damping.*omg.*C))-1./(omg.^2*obj.dtSignal)};
         end
         
-        function obj=get.spectrum(obj)
+        function result=get.spectrum(obj)
             
             ag      = obj.signal;
             nPoint= length(ag);
@@ -114,7 +113,7 @@ classdef makeSpectrum
             b21=obj.B{2,1};
             b22=obj.B{2,2};
             
-            % I suggest you that implement a parfor here. I didn't just for sake of portability.
+            
             for j=1:length(obj.period)
                 
                 d=zeros(1,nPoint);
@@ -122,8 +121,7 @@ classdef makeSpectrum
                 
                 f1=b11(j)*ag+ b12(j)*circshift(ag,1);
                 f2=b21(j)*ag+ b22(j)*circshift(ag,1);
-                % At this stage it could be implemented a matrix calculation for the two vectors.
-                % However, to build the matrix takes up to 10 times the time required by the for loop.
+                
                 for i=1:nPoint-1
                     d(i+1)=a11(j)*d(i)+a12(j)*v(i)+ f1(i);
                     v(i+1)=a21(j)*d(i)+a22(j)*v(i)+ f2(i);
@@ -135,7 +133,7 @@ classdef makeSpectrum
                 
             end
             vec(1)=max(abs(ag)) ;
-            obj=vec;
+            result=vec;
         end
     end
 end
